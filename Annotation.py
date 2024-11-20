@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  4 18:35:23 2024
-
-@author: UOU
-"""
-
 import cv2
 import numpy as np
 
@@ -54,7 +47,31 @@ def segment_image(image_path):
             points = np.array(contour, dtype=np.int32)
             cv2.polylines(temp_image, [points], isClosed=True, color=(0, 255, 0), thickness=2)
 
-        # Display the image with annotations
+        # Convert the image to grayscale and apply edge detection
+        gray = cv2.cvtColor(temp_image, cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(gray, 50, 150)
+
+        # Find contours in the edges image
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            # Approximate the contour to a polygon
+            epsilon = 0.04 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+
+            # If the polygon has 4 points, it might be a rectangle (or square)
+            if len(approx) == 4:
+                # Get the bounding box (x, y, W, H)
+                x, y, w, h = cv2.boundingRect(approx)
+
+                # Check if it is a square (w == h)
+                if abs(w - h) < 10:  # Allow small margin for error
+                    cv2.rectangle(temp_image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Draw the rectangle
+
+                    # Return (x, y, h, w) for the square
+                    print(f"Square Detected: (x, y, h, w) = ({x}, {y}, {h}, {w})")
+
+        # Display the image with annotations and detected squares
         cv2.imshow("Image Segmentation", temp_image)
         
         # Press 's' to save annotations, 'c' to clear, and 'q' to quit
@@ -77,5 +94,7 @@ def segment_image(image_path):
 
 # Example usage
 if __name__ == "__main__":
-    PathNames = r"\val2017"
-    segment_image(PathNames + "//000000000285.jpg")
+    image_path = r"C:\Users\82104\OneDrive\문서\clone_pre\Image_dataset\000000000139.jpg"
+    print("Image path:", image_path)  # 경로 확인용 출력
+    segment_image(image_path)
+
