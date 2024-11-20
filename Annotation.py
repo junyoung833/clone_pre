@@ -77,5 +77,5 @@ def segment_image(image_path):
 
 # Example usage
 if __name__ == "__main__":
-    PathNames = r"D:\02_Lectures\2024_2nd\Lecture_Materials\SW_Dev\Project\val2017\val2017"
+    PathNames = r"\val2017"
     segment_image(PathNames + "//000000000285.jpg")
