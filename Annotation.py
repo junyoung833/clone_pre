@@ -86,7 +86,7 @@ def segment_image(image_path):
             # Clear annotations
             annotations.clear()
             annotated_image = image.copy()
-            print("Annotations cleared")
+            print("Annotations clear")
         elif key == ord("q"):
             break
 
